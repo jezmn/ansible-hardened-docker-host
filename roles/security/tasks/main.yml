@@ -1,0 +1,15 @@
+---
+- name: Apply SSH hardening
+  ansible.builtin.include_tasks: ssh.yml
+
+- name: Apply system hardening
+  ansible.builtin.include_tasks: system.yml
+
+- name: Apply logging hardening
+  ansible.builtin.include_tasks: logging.yml
+
+- name: Apply access hardening
+  ansible.builtin.include_tasks: access.yml
+
+- name: Apply updates hardening
+  ansible.builtin.include_tasks: updates.yml

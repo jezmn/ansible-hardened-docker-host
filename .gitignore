@@ -1,0 +1,7 @@
+hosts.ini
+hosts-bootstrap.ini
+.ansible/
+.cache/
+.ruff_cache/
+*.retry
+*.log

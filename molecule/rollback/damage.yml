@@ -1,0 +1,10 @@
+---
+- name: Damage SSH configuration
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Break Password Authentication in sshd_config
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^(#)?PasswordAuthentication"
+        line: "PasswordAuthentication yes"

@@ -1,0 +1,8 @@
+---
+- name: Bootstrap server
+  hosts: bootstrap
+  gather_facts: false
+  become: true
+
+  roles:
+    - bootstrap

@@ -1,0 +1,31 @@
+name: molecule-test
+on:
+  push:
+    paths:
+      - 'roles/**'
+      - 'molecule/**'
+      - 'playbooks/**'
+      - 'requirements.yml'
+      - 'requirements-dev.txt'
+  pull_request:
+    paths:
+      - 'roles/**'
+      - 'molecule/**'
+      - 'playbooks/**'
+      - 'requirements.yml'
+      - 'requirements-dev.txt'
+jobs:
+  test:
+    name: Molecule Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Install Ansible collections
+        run: ansible-galaxy collection install -r requirements.yml
+      - name: Run molecule test
+        run: molecule test --all

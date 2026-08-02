@@ -1,0 +1,50 @@
+---
+- name: Restrict permissions on cron directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - /etc/cron.d
+    - /etc/cron.hourly
+    - /etc/cron.daily
+    - /etc/cron.weekly
+    - /etc/cron.monthly
+
+- name: Restrict permissions on /etc/crontab
+  ansible.builtin.file:
+    path: /etc/crontab
+    state: file
+    mode: "0600"
+
+- name: Restrict cron to authorized users
+  ansible.builtin.copy:
+    dest: /etc/cron.allow
+    owner: root
+    group: crontab
+    mode: "0640"
+    content: |
+      root
+      {{ users_accounts | map(attribute='name') | join('\n') }}
+  when:
+    - users_accounts is defined
+    - users_accounts | length > 0
+
+- name: Restrict at to authorized users
+  ansible.builtin.copy:
+    dest: /etc/at.allow
+    owner: root
+    group: root
+    mode: "0640"
+    content: |
+      root
+      {{ users_accounts | map(attribute='name') | join('\n') }}
+  when:
+    - users_accounts is defined
+    - users_accounts | length > 0
+
+- name: Remove /snap/bin from root PATH
+  ansible.builtin.replace:
+    path: /etc/environment
+    regexp: ':/snap/bin'
+    replace: ''

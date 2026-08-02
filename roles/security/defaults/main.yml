@@ -1,0 +1,77 @@
+---
+security_banner_text: |
+  Authorized access only.
+  All activity is monitored and reported.
+
+security_sysctls:
+  kernel.randomize_va_space: "2"
+  fs.suid_dumpable: "0"
+  net.ipv4.tcp_syncookies: "1"
+  net.ipv4.conf.all.accept_source_route: "0"
+  net.ipv4.conf.default.accept_source_route: "0"
+  net.ipv4.conf.all.accept_redirects: "0"
+  net.ipv4.conf.default.accept_redirects: "0"
+  net.ipv4.conf.all.send_redirects: "0"
+  net.ipv4.conf.default.send_redirects: "0"
+  net.ipv4.conf.all.log_martians: "1"
+  net.ipv4.icmp_echo_ignore_broadcasts: "1"
+  net.ipv4.conf.all.rp_filter: "1"
+  net.ipv4.conf.default.rp_filter: "1"
+  net.ipv4.conf.all.secure_redirects: "0"
+  net.ipv4.conf.default.secure_redirects: "0"
+  net.ipv4.conf.default.log_martians: "1"
+
+  # CIS 3.3.11: Disable IPv6 auto-configuration from Router Advertisements (SLAAC).
+  # If the provider assigns IPv6 via SLAAC, override these values per host.
+  net.ipv6.conf.all.accept_ra: "0"
+  net.ipv6.conf.default.accept_ra: "0"
+  net.ipv6.conf.all.accept_redirects: "0"
+  net.ipv6.conf.default.accept_redirects: "0"
+  net.ipv6.conf.all.accept_source_route: "0"
+  net.ipv6.conf.default.accept_source_route: "0"
+  net.ipv6.conf.all.forwarding: "0"
+  net.ipv6.conf.default.forwarding: "0"
+
+security_ssh_ciphers:
+  - chacha20-poly1305@openssh.com
+  - aes128-ctr
+  - aes192-ctr
+  - aes256-ctr
+  - aes128-gcm@openssh.com
+  - aes256-gcm@openssh.com
+
+security_ssh_kex_algorithms:
+  - sntrup761x25519-sha512@openssh.com
+  - curve25519-sha256
+  - curve25519-sha256@libssh.org
+  - ecdh-sha2-nistp256
+  - ecdh-sha2-nistp384
+  - ecdh-sha2-nistp521
+  - diffie-hellman-group-exchange-sha256
+  - diffie-hellman-group16-sha512
+  - diffie-hellman-group18-sha512
+  - diffie-hellman-group14-sha256
+
+security_ssh_macs:
+  - hmac-sha2-512-etm@openssh.com
+  - hmac-sha2-256-etm@openssh.com
+  - hmac-sha2-512
+  - hmac-sha2-256
+
+# Whether to reboot when needed during unattended upgrades.
+security_autoupdate_reboot: "false"
+
+# UTC. Avoid Docker cleanup at Sun 03:00.
+security_autoupdate_reboot_time: "02:00"
+
+# Additional users appended to sshd AllowUsers.
+security_ssh_extra_allowed_users:
+  - ansible
+
+# Disable SSH TCP forwarding (CIS 5.1.8).
+# Set to "yes" if SSH tunnels (-L/-R/-D) are required.
+security_ssh_allow_tcp_forwarding: "no"
+
+# Auto-logout inactive shell sessions after N seconds (CIS 5.4.3.2).
+# Set to 0 to disable.
+security_shell_timeout: 900

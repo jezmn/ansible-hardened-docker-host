@@ -1,0 +1,4 @@
+---
+# Password hashes for sudo users. Add one entry per user.
+users_passwords:
+  <username>: "<hash>"

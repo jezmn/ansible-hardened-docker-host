@@ -1,0 +1,35 @@
+---
+argument_specs:
+  main:
+    short_description: Create sudo user accounts
+    description:
+      - Creates user accounts with sudo group membership, password hashes
+        and authorized SSH keys.
+    options:
+      users_accounts:
+        type: list
+        elements: dict
+        required: false
+        description:
+          - List of accounts to create, sourced from group_vars/servers/users.yml.
+        options:
+          name:
+            type: str
+            required: true
+            description: Login name of the user.
+          sudo:
+            type: bool
+            default: false
+            description:
+              - Whether the user is added to the sudo group.
+              - Sudo users also need an entry in users_passwords.
+          ssh_public_key:
+            type: str
+            required: true
+            description: The user's public SSH key for key-based auth.
+      users_passwords:
+        type: dict
+        required: false
+        description:
+          - Password hashes keyed by username, sourced from group_vars/servers/vault.yml.
+          - Required for sudo users; validated by an assert in the role.

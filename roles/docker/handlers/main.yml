@@ -1,0 +1,7 @@
+---
+- name: Restart docker
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+    enabled: true
+  when: ansible_facts.virtualization_type not in ["docker", "container"]

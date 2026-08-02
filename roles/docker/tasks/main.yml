@@ -1,0 +1,70 @@
+---
+# See: https://docs.docker.com/engine/install/ubuntu/
+
+- name: Ensure old versions of Docker are not installed
+  ansible.builtin.apt:
+    name:
+      - containerd
+      - docker
+      - docker-compose
+      - docker-compose-v2
+      - docker-doc
+      - docker-engine
+      - docker.io
+      - podman-docker
+      - runc
+    state: absent
+
+- name: Create directory for Docker GPG key
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Add Docker GPG apt key
+  ansible.builtin.get_url:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+    force: true
+
+- name: Add Docker repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    mode: "0644"
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/ubuntu
+      Suites: {{ ansible_facts.distribution_release }}
+      Components: stable
+      Architectures: amd64
+      Signed-By: /etc/apt/keyrings/docker.asc
+
+- name: Update apt cache after adding Docker repository
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install Docker packages
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+  notify:
+    - Restart docker
+
+- name: Install cron for scheduled cleanup
+  ansible.builtin.apt:
+    name: cron
+    state: present
+
+- name: Add docker cleanup cron job
+  ansible.builtin.cron:
+    name: docker cleanup
+    job: "docker system prune -af{{ ' --volumes' if docker_prune_volumes else '' }} > /dev/null 2>&1"
+    hour: "3"
+    minute: "0"
+    weekday: "0"

@@ -1,0 +1,7 @@
+---
+argument_specs:
+  main:
+    short_description: Reboot the host if a restart is required
+    description:
+      - Reboots when /var/run/reboot-required exists (e.g. after kernel or
+        security updates) and waits for the host to come back.

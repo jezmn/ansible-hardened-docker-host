@@ -1,0 +1,10 @@
+[bootstrap]
+<server_ip>
+
+[bootstrap:vars]
+ansible_user=root
+ansible_python_interpreter=/usr/bin/python3
+
+# Provider login key, uncomment if it uses a key
+# ansible_ssh_private_key_file=~/.ssh/provider_ed25519
+

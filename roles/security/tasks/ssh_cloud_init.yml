@@ -1,0 +1,42 @@
+---
+- name: Check for cloud-init SSH override file
+  ansible.builtin.stat:
+    path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+  register: security_cloud_init_ssh_override
+
+- name: Check for existing cloud-init override backup
+  ansible.builtin.stat:
+    path: /etc/ssh/sshd_config.d/50-cloud-init.conf.ansible-backup
+  register: security_cloud_init_override_backup
+
+- name: Backup sshd_config override before modifying
+  ansible.builtin.copy:
+    src: /etc/ssh/sshd_config.d/50-cloud-init.conf
+    dest: /etc/ssh/sshd_config.d/50-cloud-init.conf.ansible-backup
+    remote_src: true
+    mode: "0600"
+    validate: 'sshd -T -f %s'
+  when:
+    - security_cloud_init_ssh_override.stat.exists
+    - not ansible_check_mode
+    - not security_cloud_init_override_backup.stat.exists
+
+- name: Neutralize cloud-init SSH password override
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config.d/50-cloud-init.conf
+    regexp: "^(#)?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+    validate: 'sshd -T -f %s'
+    mode: "0600"
+  when: security_cloud_init_ssh_override.stat.exists
+  notify:
+    - Restart ssh
+
+- name: Enforce permissions on cloud-init override backup
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d/50-cloud-init.conf.ansible-backup
+    mode: "0600"
+    owner: root
+    group: root
+  when: security_cloud_init_override_backup.stat.exists

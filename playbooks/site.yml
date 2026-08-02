@@ -1,0 +1,15 @@
+---
+- name: Provisioning servers group
+  hosts: servers
+  gather_facts: false
+  become: true
+
+  roles:
+    - wait_for_connection
+    - packages
+    - docker
+    - firewall
+    - users
+    - security
+    - swap
+    - reboot_if_needed

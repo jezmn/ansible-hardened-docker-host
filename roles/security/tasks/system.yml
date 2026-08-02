@@ -1,0 +1,133 @@
+---
+- name: Apply kernel hardening sysctls
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-hardening.conf
+  loop: "{{ security_sysctls | dict2items }}"
+  when:
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Apply reverse path filtering per interface
+  ansible.posix.sysctl:
+    name: "net.ipv4.conf.{{ item }}.rp_filter"
+    value: "1"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-hardening.conf
+  loop: "{{ ansible_facts.interfaces }}"
+  when:
+    - item != "lo"
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Check for the ufw sysctl file
+  ansible.builtin.stat:
+    path: /etc/ufw/sysctl.conf
+  register: security_ufw_sysctl
+
+- name: Comment out conflicting log_martians in the ufw sysctl file
+  ansible.builtin.replace:
+    path: /etc/ufw/sysctl.conf
+    regexp: '^(net[/.]ipv4[/.]conf[/.](all|default)[/.]log_martians).*$'
+    replace: '# \1'
+  when:
+    - security_ufw_sysctl.stat.exists
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Check for the cloud image sysctl file
+  ansible.builtin.stat:
+    path: /etc/sysctl.d/10-network-security.conf
+  register: security_cloud_sysctl
+
+- name: Comment out conflicting rp_filter in the cloud image sysctl file
+  ansible.builtin.replace:
+    path: /etc/sysctl.d/10-network-security.conf
+    regexp: '^(net[/.]ipv4[/.]conf[/.](all|default)[/.]rp_filter).*$'
+    replace: '# \1'
+  when:
+    - security_cloud_sysctl.stat.exists
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Configure default user umask
+  ansible.builtin.copy:
+    dest: /etc/profile.d/99-umask.sh
+    mode: "0644"
+    content: |
+      umask 027
+
+- name: Set umask in login.defs
+  ansible.builtin.lineinfile:
+    dest: /etc/login.defs
+    regexp: "^#?UMASK"
+    line: "UMASK 027"
+    state: present
+    mode: "0644"
+
+- name: Set umask for interactive non-login shells
+  ansible.builtin.lineinfile:
+    dest: /etc/bash.bashrc
+    regexp: '^\s*#?\s*umask\s+'
+    line: "umask 027"
+    state: present
+    mode: "0644"
+
+- name: Configure default user shell timeout
+  ansible.builtin.copy:
+    dest: /etc/profile.d/99-tmout.sh
+    mode: "0644"
+    content: |
+      TMOUT={{ security_shell_timeout }}
+      readonly TMOUT
+      export TMOUT
+  when: security_shell_timeout | int > 0
+
+- name: Disable core dumps
+  ansible.builtin.copy:
+    dest: /etc/security/limits.d/99-disable-core.conf
+    mode: "0644"
+    content: |
+      * hard core 0
+
+- name: Check if apport is installed
+  ansible.builtin.stat:
+    path: /etc/default/apport
+  register: security_apport_config
+
+- name: Stop and disable apport
+  ansible.builtin.service:
+    name: apport
+    state: stopped
+    enabled: false
+  when:
+    - security_apport_config.stat.exists
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Disable apport error reporting
+  ansible.builtin.lineinfile:
+    dest: /etc/default/apport
+    regexp: "^enabled"
+    line: "enabled=0"
+    state: present
+    create: true
+    mode: "0644"
+  when: security_apport_config.stat.exists
+
+- name: Ensure modprobe.d directory exists
+  ansible.builtin.file:
+    path: /etc/modprobe.d
+    state: directory
+    mode: "0755"
+  when: ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Blacklist unused filesystem and storage kernel modules
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/99-hardening.conf
+    mode: "0644"
+    content: |
+      install cramfs /bin/true
+      install freevxfs /bin/true
+      install hfs /bin/true
+      install hfsplus /bin/true
+      install jffs2 /bin/true
+      install usb-storage /bin/true
+  when: ansible_facts.virtualization_type not in ["docker", "container"]

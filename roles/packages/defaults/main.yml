@@ -1,0 +1,4 @@
+---
+packages_fail2ban_bantime: "1h"
+packages_fail2ban_findtime: "10m"
+packages_fail2ban_maxretry: "5"

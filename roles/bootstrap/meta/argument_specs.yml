@@ -1,0 +1,23 @@
+---
+argument_specs:
+  main:
+    short_description: Create the ansible provisioning user
+    description:
+      - Creates a sudo user (defaults to `ansible`) with an authorized SSH
+        key and passwordless sudo, used to provision the server afterwards.
+    options:
+      bootstrap_user:
+        type: dict
+        required: false
+        description:
+          - The provisioning user to create, sourced from group_vars/bootstrap.yml.
+        options:
+          name:
+            type: str
+            required: false
+            default: ansible
+            description: Login name of the provisioning user.
+          ssh_public_key:
+            type: str
+            required: true
+            description: The user's public SSH key for key-based auth.

@@ -1,0 +1,24 @@
+---
+argument_specs:
+  main:
+    short_description: Install base packages and hardening
+    description:
+      - Upgrades apt packages, installs base tools, sets the UTC timezone,
+        configures the fail2ban sshd jail and removes Snap.
+    options:
+      packages_fail2ban_bantime:
+        type: str
+        default: "1h"
+        description:
+          - How long a banned IP stays banned.
+          - Uses fail2ban time syntax, e.g. "1h" or "30m".
+      packages_fail2ban_findtime:
+        type: str
+        default: "10m"
+        description:
+          - Window in which failed login attempts are counted before a ban.
+      packages_fail2ban_maxretry:
+        type: str
+        default: "5"
+        description:
+          - Failed attempts within findtime that trigger a ban.

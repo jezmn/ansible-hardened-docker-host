@@ -1,0 +1,52 @@
+---
+- name: Configure journald to persist logs
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^#?Storage"
+    line: "Storage=persistent"
+    state: present
+    mode: "0644"
+  notify:
+    - Restart systemd-journald
+
+- name: Configure journald log compression
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^#?Compress"
+    line: "Compress=yes"
+    state: present
+    mode: "0644"
+  notify:
+    - Restart systemd-journald
+
+- name: Disable journald forwarding to syslog
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^#?ForwardToSyslog"
+    line: "ForwardToSyslog=no"
+    state: present
+    mode: "0644"
+  notify:
+    - Restart systemd-journald
+
+- name: Configure sudo log file
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/99-logfile
+    mode: "0440"
+    validate: 'visudo -cf %s'
+    content: |
+      Defaults logfile="/var/log/sudo.log"
+
+- name: Install auditd
+  ansible.builtin.apt:
+    name:
+      - auditd
+      - audispd-plugins
+    state: present
+
+- name: Start and enable auditd
+  ansible.builtin.service:
+    name: auditd
+    state: started
+    enabled: true
+  when: ansible_facts.virtualization_type not in ["docker", "container"]

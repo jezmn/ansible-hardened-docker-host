@@ -1,0 +1,6 @@
+---
+# The ansible user that site.yml connects as
+# This is the .pub of ~/.ssh/ansible_ed25519
+bootstrap_user:
+  name: ansible
+  ssh_public_key: "<ssh_public_key>"

@@ -1,0 +1,39 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: ../../requirements.yml
+driver:
+  name: docker
+platforms:
+  - name: instance
+    groups:
+      - servers
+    image: geerlingguy/docker-ubuntu2404-ansible
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup/:rw
+    cgroupns_mode: host
+    command: /lib/systemd/systemd
+
+scenario:
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - converge
+    - idempotence
+    - side_effect
+    - converge
+    - verify
+    - destroy
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: ../../roles
+  playbooks:
+    side_effect: side_effect.yml
+
+verifier:
+  name: testinfra

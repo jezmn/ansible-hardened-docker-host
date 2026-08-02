@@ -1,0 +1,26 @@
+---
+- name: Validate sudo users have passwords
+  ansible.builtin.assert:
+    that:
+      - users_passwords is defined and users_passwords[item.name] is defined
+    fail_msg: "sudo user {{ item.name }} requires a password hash"
+  loop: "{{ users_accounts }}"
+  when: item.sudo
+
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ 'sudo' if item.sudo else omit }}"
+    append: true
+    shell: /bin/bash
+    password: "{{ (users_passwords | default({}))[item.name] | default(omit) }}"
+    update_password: on_create
+    state: present
+  loop: "{{ users_accounts }}"
+
+- name: Set up authorized SSH key for each user
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_public_key }}"
+    state: present
+  loop: "{{ users_accounts }}"

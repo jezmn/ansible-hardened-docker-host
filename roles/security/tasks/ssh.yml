@@ -1,0 +1,26 @@
+---
+- name: Ensure sshd privilege separation directory exists
+  ansible.builtin.file:
+    path: /run/sshd
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Neutralize cloud-init SSH overrides
+  ansible.builtin.include_tasks: ssh_cloud_init.yml
+
+- name: Harden sshd_config
+  ansible.builtin.include_tasks: sshd_config.yml
+
+- name: Deploy login banner
+  ansible.builtin.copy:
+    dest: /etc/motd
+    content: "{{ security_banner_text }}"
+    mode: "0644"
+
+- name: Deploy pre-login banner
+  ansible.builtin.copy:
+    dest: /etc/issue.net
+    content: "{{ security_banner_text }}"
+    mode: "0644"

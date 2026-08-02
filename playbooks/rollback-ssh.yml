@@ -1,0 +1,36 @@
+---
+- name: Rollback SSH configuration
+  hosts: servers
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Check for sshd_config backup
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config.ansible-backup
+      register: sshd_backup
+
+    - name: Restore sshd_config from backup
+      ansible.builtin.copy:
+        src: /etc/ssh/sshd_config.ansible-backup
+        dest: /etc/ssh/sshd_config
+        remote_src: true
+        mode: "0600"
+      when: sshd_backup.stat.exists
+
+    - name: Check for cloud-init SSH override backup
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config.d/50-cloud-init.conf.ansible-backup
+      register: cloud_init_backup
+
+    - name: Restore cloud-init SSH override backup
+      ansible.builtin.copy:
+        src: /etc/ssh/sshd_config.d/50-cloud-init.conf.ansible-backup
+        dest: /etc/ssh/sshd_config.d/50-cloud-init.conf
+        remote_src: true
+        mode: "0600"
+      when: cloud_init_backup.stat.exists
+
+    - name: Restart SSH
+      ansible.builtin.service:
+        name: ssh
+        state: restarted

@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure Docker
+    description:
+      - Installs Docker CE, buildx and the compose plugin from the official
+        Docker repository and schedules a weekly cleanup cron.
+    options:
+      docker_prune_volumes:
+        type: bool
+        default: false
+        description:
+          - Whether the weekly docker system prune includes anonymous volumes.
+          - Set to true only if all data lives in named volumes or bind mounts.

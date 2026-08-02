@@ -1,0 +1,6 @@
+---
+- name: Damage SSH configuration
+  import_playbook: damage.yml
+
+- name: Rollback SSH configuration
+  import_playbook: ../../playbooks/rollback-ssh.yml

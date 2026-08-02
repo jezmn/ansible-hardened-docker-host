@@ -1,0 +1,40 @@
+---
+- name: Get mount info for swap file path
+  ansible.builtin.set_fact:
+    swap_file_mount: "{{ item.mount }}"
+    swap_file_fstype: "{{ item.fstype }}"
+  loop: "{{ ansible_facts.mounts }}"
+  when: swap_file_path is match(item.mount ~ '/?.*') or swap_file_path == item.mount
+
+- name: Choose create command based on filesystem
+  ansible.builtin.set_fact:
+    swap_file_create_command: >-
+      {% if swap_file_fstype in ['ext4', 'ext3', 'ext2'] %}
+      fallocate -l {{ swap_file_size_mb }}M {{ swap_file_path }}
+      {% else %}
+      dd if=/dev/zero of={{ swap_file_path }} bs=1M count={{ swap_file_size_mb }}
+      {% endif %}
+
+- name: Ensure swap file exists.
+  ansible.builtin.command: "{{ swap_file_create_command }}"
+  args:
+    creates: "{{ swap_file_path }}"
+  notify: Make and enable swap file
+
+- name: Set permissions on swap file.
+  ansible.builtin.file:
+    path: "{{ swap_file_path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: not ansible_check_mode
+
+- name: Set swappiness.
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "{{ swap_swappiness }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-swap.conf
+    sysctl_set: true
+  when:
+    - ansible_facts.virtualization_type not in ["docker", "container"]

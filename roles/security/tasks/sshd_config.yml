@@ -1,0 +1,102 @@
+---
+- name: Check for existing sshd_config backup
+  ansible.builtin.stat:
+    path: /etc/ssh/sshd_config.ansible-backup
+  register: security_sshd_config_backup
+
+- name: Backup sshd_config before modifying
+  ansible.builtin.copy:
+    src: /etc/ssh/sshd_config
+    dest: /etc/ssh/sshd_config.ansible-backup
+    remote_src: true
+    mode: "0600"
+    validate: 'sshd -T -f %s'
+  when:
+    - not ansible_check_mode
+    - not security_sshd_config_backup.stat.exists
+
+- name: Enforce permissions on sshd_config backup
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.ansible-backup
+    mode: "0600"
+    owner: root
+    group: root
+  when: security_sshd_config_backup.stat.exists
+
+- name: Update SSH configuration to be more secure
+  ansible.builtin.lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "^(#)?{{ item.key }}"
+    line: "{{ item.key }} {{ item.value }}"
+    state: present
+    validate: 'sshd -T -f %s'
+    mode: "0600"
+  loop:
+    - { key: "PasswordAuthentication", value: "no" }
+    - { key: "PermitRootLogin", value: "prohibit-password" }
+    - { key: "Port", value: "22" }
+    - { key: "UseDNS", value: "no" }
+    - { key: "PermitEmptyPasswords", value: "no" }
+    - { key: "KbdInteractiveAuthentication", value: "no" }
+    - { key: "GSSAPIAuthentication", value: "no" }
+    - { key: "X11Forwarding", value: "no" }
+    - { key: "AllowAgentForwarding", value: "no" }
+    - { key: "MaxAuthTries", value: "3" }
+    - { key: "LoginGraceTime", value: "30" }
+    - { key: "ClientAliveInterval", value: "300" }
+    - { key: "ClientAliveCountMax", value: "2" }
+    - { key: "LogLevel", value: "INFO" }
+    - { key: "MaxSessions", value: "10" }
+    - { key: "MaxStartups", value: "10:30:60" }
+    - { key: "HostbasedAuthentication", value: "no" }
+    - { key: "IgnoreRhosts", value: "yes" }
+    - { key: "PermitUserEnvironment", value: "no" }
+    - { key: "Ciphers", value: "{{ security_ssh_ciphers | join(',') }}" }
+    - { key: "KexAlgorithms", value: "{{ security_ssh_kex_algorithms | join(',') }}" }
+    - { key: "MACs", value: "{{ security_ssh_macs | join(',') }}" }
+    - { key: "Banner", value: "/etc/issue.net" }
+  notify:
+    - Restart ssh
+
+- name: Enforce permissions on sshd config files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: "0600"
+    owner: root
+    group: root
+  loop:
+    - /etc/ssh/sshd_config
+    - /etc/ssh/sshd_config.d/50-cloud-init.conf
+  when:
+    - security_cloud_init_ssh_override.stat.exists
+      or item == "/etc/ssh/sshd_config"
+
+- name: Configure SSH TCP forwarding
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^(#)?AllowTcpForwarding"
+    line: "AllowTcpForwarding {{ security_ssh_allow_tcp_forwarding }}"
+    state: present
+    validate: 'sshd -T -f %s'
+    mode: "0600"
+  notify:
+    - Restart ssh
+
+- name: Restrict SSH access to allowed users
+  vars:
+    ssh_allowed_users: >-
+      {{ (security_ssh_extra_allowed_users
+      + users_accounts | map(attribute='name') | list)
+      | unique | join(' ') }}
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^#?AllowUsers"
+    line: "AllowUsers {{ ssh_allowed_users }}"
+    state: present
+    validate: 'sshd -T -f %s'
+    mode: "0600"
+  when:
+    - users_accounts is defined
+    - users_accounts | length > 0
+  notify:
+    - Restart ssh

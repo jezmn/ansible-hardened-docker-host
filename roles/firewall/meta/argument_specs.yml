@@ -1,0 +1,9 @@
+---
+argument_specs:
+  main:
+    short_description: Configure the ufw host firewall
+    description:
+      - Sets the ufw default policies (deny incoming, allow outgoing) and
+        opens ports 22 (rate-limited), 80 and 443.
+      - Not exercised by Molecule, since ufw cannot meaningfully manage the
+        host firewall from inside a container.

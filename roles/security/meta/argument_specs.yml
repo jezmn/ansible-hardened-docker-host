@@ -1,0 +1,113 @@
+---
+argument_specs:
+  main:
+    short_description: Harden SSH and kernel
+    description:
+      - Hardens sshd_config, deploys login banners, applies kernel sysctls,
+        installs and enables auditd and configures unattended-upgrades.
+    options:
+      security_banner_text:
+        type: str
+        default: |
+          Authorized access only.
+          All activity is monitored and reported.
+        description:
+          - Legal banner text deployed to /etc/motd and /etc/issue.net.
+      security_sysctls:
+        type: dict
+        default:
+          kernel.randomize_va_space: "2"
+          fs.suid_dumpable: "0"
+          net.ipv4.tcp_syncookies: "1"
+          net.ipv4.conf.all.accept_source_route: "0"
+          net.ipv4.conf.default.accept_source_route: "0"
+          net.ipv4.conf.all.accept_redirects: "0"
+          net.ipv4.conf.default.accept_redirects: "0"
+          net.ipv4.conf.all.send_redirects: "0"
+          net.ipv4.conf.default.send_redirects: "0"
+          net.ipv4.conf.all.log_martians: "1"
+          net.ipv4.icmp_echo_ignore_broadcasts: "1"
+          net.ipv4.conf.all.rp_filter: "1"
+          net.ipv4.conf.default.rp_filter: "1"
+          net.ipv4.conf.all.secure_redirects: "0"
+          net.ipv4.conf.default.secure_redirects: "0"
+          net.ipv4.conf.default.log_martians: "1"
+          net.ipv6.conf.all.accept_ra: "0"
+          net.ipv6.conf.default.accept_ra: "0"
+          net.ipv6.conf.all.accept_redirects: "0"
+          net.ipv6.conf.default.accept_redirects: "0"
+          net.ipv6.conf.all.accept_source_route: "0"
+          net.ipv6.conf.default.accept_source_route: "0"
+          net.ipv6.conf.all.forwarding: "0"
+          net.ipv6.conf.default.forwarding: "0"
+        description:
+          - Kernel sysctls written to /etc/sysctl.d/99-hardening.conf.
+          - What each one does is in docs/cis-mapping.md.
+          - IPv4 forwarding is intentionally not set (Docker requires it, see 3.3.1).
+      security_autoupdate_reboot:
+        type: str
+        default: "false"
+        description:
+          - Set to "true" to reboot automatically after security updates.
+      security_autoupdate_reboot_time:
+        type: str
+        default: "02:00"
+        description:
+          - Reboot time in 24h hh:mm UTC when auto-reboot is enabled.
+      security_ssh_allow_tcp_forwarding:
+        type: str
+        default: "no"
+        description:
+          - Set to "yes" to allow ssh -L / -R / -D TCP forwarding. Default
+            "no" satisfies CIS 5.1.8.
+      security_ssh_extra_allowed_users:
+        type: list
+        elements: str
+        default: [ansible]
+        description:
+          - Extra usernames allowed in sshd AllowUsers, on top of users_accounts.
+          - Defaults to the provisioning user (ansible) created by the bootstrap role.
+      security_ssh_ciphers:
+        type: list
+        elements: str
+        default:
+          - chacha20-poly1305@openssh.com
+          - aes128-ctr
+          - aes192-ctr
+          - aes256-ctr
+          - aes128-gcm@openssh.com
+          - aes256-gcm@openssh.com
+        description:
+          - Explicit sshd Ciphers list (CIS 5.1.6, CIS-approved set).
+      security_ssh_kex_algorithms:
+        type: list
+        elements: str
+        default:
+          - sntrup761x25519-sha512@openssh.com
+          - curve25519-sha256
+          - curve25519-sha256@libssh.org
+          - ecdh-sha2-nistp256
+          - ecdh-sha2-nistp384
+          - ecdh-sha2-nistp521
+          - diffie-hellman-group-exchange-sha256
+          - diffie-hellman-group16-sha512
+          - diffie-hellman-group18-sha512
+          - diffie-hellman-group14-sha256
+        description:
+          - Explicit sshd KexAlgorithms list (CIS 5.1.12, CIS-approved set).
+      security_ssh_macs:
+        type: list
+        elements: str
+        default:
+          - hmac-sha2-512-etm@openssh.com
+          - hmac-sha2-256-etm@openssh.com
+          - hmac-sha2-512
+          - hmac-sha2-256
+        description:
+          - Explicit sshd MACs list (CIS 5.1.15, CIS-approved set).
+      security_shell_timeout:
+        type: int
+        default: 900
+        description:
+          - Auto-logout inactive shell sessions after N seconds (CIS 5.4.3.2).
+          - Set to 0 to disable.

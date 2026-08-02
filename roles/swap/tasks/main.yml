@@ -1,0 +1,29 @@
+---
+- name: Validate swap configuration
+  ansible.builtin.assert:
+    that:
+      - swap_file_size_mb is defined
+      - swap_file_size_mb | int > 0
+      - swap_file_state in ['present', 'absent']
+    fail_msg: "swap_file_size_mb must be a positive integer and swap_file_state must be present/absent"
+
+- name: Manage swap file entry in fstab.
+  ansible.posix.mount:
+    name: none
+    src: "{{ swap_file_path }}"
+    fstype: swap
+    opts: sw
+    state: "{{ swap_file_state }}"
+
+- name: Check current swap file size
+  ansible.builtin.include_tasks: check-size.yml
+  when: swap_file_state == 'present'
+
+- name: Disable swap if size changed or state is absent
+  ansible.builtin.include_tasks: disable.yml
+  when: swap_file_state == 'absent'
+    or (swap_file_state == 'present' and (swap_file_existing_size_mb | int) != (swap_file_size_mb | int))
+
+- name: Enable swap file
+  ansible.builtin.include_tasks: enable.yml
+  when: swap_file_state == 'present'

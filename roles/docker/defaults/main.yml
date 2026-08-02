@@ -1,0 +1,3 @@
+---
+# Include --volumes in the weekly cleanup. Safe if all data lives in named volumes.
+docker_prune_volumes: false

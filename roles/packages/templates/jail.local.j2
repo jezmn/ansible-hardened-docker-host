@@ -1,0 +1,8 @@
+[DEFAULT]
+bantime = {{ packages_fail2ban_bantime }}
+findtime = {{ packages_fail2ban_findtime }}
+maxretry = {{ packages_fail2ban_maxretry }}
+backend = systemd
+
+[sshd]
+enabled = true

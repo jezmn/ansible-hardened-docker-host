@@ -1,0 +1,82 @@
+---
+- name: Ensure apt key is not present in trusted.gpg.d
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg.d/docker.asc
+    state: absent
+
+- name: Ensure the repo referencing the previous trusted.gpg.d key is not present
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    state: absent
+
+- name: Upgrade packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: true
+
+- name: Install packages
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - build-essential
+      - ca-certificates
+      - chrony
+      - curl
+      - duf
+      - fail2ban
+      - git
+      - gnupg
+      - htop
+      - ufw
+      - unattended-upgrades
+      - vim
+    state: latest
+    update_cache: true
+    autoremove: true
+    autoclean: true
+  notify:
+    - Start chrony
+    - Start fail2ban
+
+- name: Configure fail2ban sshd jail
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    mode: "0644"
+  notify:
+    - Restart fail2ban
+
+- name: Validate fail2ban configuration
+  ansible.builtin.command: fail2ban-client -t
+  changed_when: false
+  check_mode: false
+
+- name: Ensure server timezone is UTC
+  community.general.timezone:
+    name: UTC
+  when:
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+# Raises kernel UDP buffer limits to prevent packet drops in QUIC-based tools.
+- name: Increase UDP receive buffer max
+  ansible.posix.sysctl:
+    name: net.core.rmem_max
+    value: "7500000"
+    state: present
+  when:
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Increase UDP send buffer max
+  ansible.posix.sysctl:
+    name: net.core.wmem_max
+    value: "7500000"
+    state: present
+  when:
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Remove snap
+  ansible.builtin.apt:
+    name:
+      - snapd
+    state: absent
+    purge: true

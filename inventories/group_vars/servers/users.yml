@@ -1,0 +1,6 @@
+---
+# User accounts to create. Add one entry per user.
+users_accounts:
+  - name: <username>
+    sudo: true
+    ssh_public_key: "<ssh_public_key>"

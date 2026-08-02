@@ -1,0 +1,37 @@
+---
+# The firewall and swap roles are intentionally not included: UFW cannot
+# meaningfully manage the host firewall from inside a container, and swapon is
+# denied by cgroup v2 in non-root containers. Both are validated on a real
+# server instead. See README "Testing with Molecule".
+- name: Converge
+  hosts: all
+  gather_facts: true
+  vars:
+    users_accounts:
+      - name: alice
+        sudo: true
+        ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII244GCdnI/8cKBv9jcdtbf+Jtz+i0LMPgYsJWwSZpdp alice@test" # test-key
+    users_passwords:
+      alice: "$6$q4hi29MCqmuKhdiE$EErd2hIbyrHitK2rY1QRHtR/yzrBdDM5p/.G63ww3HT8Yvf3yE0HctC3fZKFMB/t.S00exaoIAlPdM6nSSEY90" # test-password
+    security_autoupdate_reboot: "false"
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+    - name: Install openssh-server for configuration
+      ansible.builtin.apt:
+        name: openssh-server
+        state: present
+    - name: Include packages role
+      ansible.builtin.include_role:
+        name: packages
+    - name: Include users role
+      ansible.builtin.include_role:
+        name: users
+    - name: Include security role
+      ansible.builtin.include_role:
+        name: security
+    - name: Include docker role
+      ansible.builtin.include_role:
+        name: docker

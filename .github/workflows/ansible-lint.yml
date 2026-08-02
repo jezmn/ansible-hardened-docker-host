@@ -1,0 +1,19 @@
+name: ansible-lint
+
+on:
+  push:
+    paths:
+      - '**.yml'
+      - '.ansible-lint'
+  pull_request:
+    paths:
+      - '**.yml'
+      - '.ansible-lint'
+
+jobs:
+  build:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ansible/ansible-lint@v26

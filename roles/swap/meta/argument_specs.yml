@@ -1,0 +1,30 @@
+---
+argument_specs:
+  main:
+    short_description: Configure a swap file
+    description:
+      - Creates a swap file with configurable size and swappiness.
+    options:
+      swap_file_path:
+        type: path
+        default: /swapfile
+        description: Path of the swap file.
+      swap_file_size_mb:
+        type: str
+        default: '2048'
+        description: Size of the swap file in megabytes.
+      swap_swappiness:
+        type: str
+        default: '60'
+        description: Kernel swappiness (0-100).
+      swap_file_state:
+        type: str
+        default: present
+        choices: [absent, present]
+        description: Whether the swap file should exist.
+      swap_test_mode:
+        type: bool
+        default: false
+        description:
+          - Run in test mode (do not create the swap file).
+          - Used by CI to validate the role without a real swap.
