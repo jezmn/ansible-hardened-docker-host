@@ -3,5 +3,7 @@ hosts-bootstrap.ini
 .ansible/
 .cache/
 .ruff_cache/
+.venv/
+__pycache__/
 *.retry
 *.log
