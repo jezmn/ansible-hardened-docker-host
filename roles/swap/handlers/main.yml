@@ -1,10 +1,16 @@
 ---
 - name: Make swap file
-  ansible.builtin.command: mkswap {{ swap_file_path }}
+  ansible.builtin.command:
+    argv:
+      - mkswap
+      - "{{ swap_file_path }}"
   changed_when: true
   listen: Make and enable swap file
 
 - name: Run swapon on the swap file
-  ansible.builtin.command: swapon {{ swap_file_path }}
+  ansible.builtin.command:
+    argv:
+      - swapon
+      - "{{ swap_file_path }}"
   changed_when: true
   listen: Make and enable swap file

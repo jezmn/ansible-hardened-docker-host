@@ -6,17 +6,19 @@
   loop: "{{ ansible_facts.mounts }}"
   when: swap_file_path is match(item.mount ~ '/?.*') or swap_file_path == item.mount
 
-- name: Choose create command based on filesystem
+- name: Choose create command based on filesystem (fallocate)
   ansible.builtin.set_fact:
-    swap_file_create_command: >-
-      {% if swap_file_fstype in ['ext4', 'ext3', 'ext2'] %}
-      fallocate -l {{ swap_file_size_mb }}M {{ swap_file_path }}
-      {% else %}
-      dd if=/dev/zero of={{ swap_file_path }} bs=1M count={{ swap_file_size_mb }}
-      {% endif %}
+    swap_file_create_command: "{{ ['fallocate', '-l', swap_file_size_mb ~ 'M', swap_file_path] }}"
+  when: swap_file_fstype in ['ext4', 'ext3', 'ext2']
+
+- name: Choose create command based on filesystem (dd)
+  ansible.builtin.set_fact:
+    swap_file_create_command: "{{ ['dd', 'if=/dev/zero', 'of=' ~ swap_file_path, 'bs=1M', 'count=' ~ swap_file_size_mb] }}"
+  when: swap_file_fstype not in ['ext4', 'ext3', 'ext2']
 
 - name: Ensure swap file exists.
-  ansible.builtin.command: "{{ swap_file_create_command }}"
+  ansible.builtin.command:
+    argv: "{{ swap_file_create_command }}"
   args:
     creates: "{{ swap_file_path }}"
   notify: Make and enable swap file
