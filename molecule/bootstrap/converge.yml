@@ -3,9 +3,8 @@
   hosts: all
   gather_facts: true
   vars:
-    bootstrap_user:
-      name: ansible
-      ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII244GCdnI/8cKBv9jcdtbf+Jtz+i0LMPgYsJWwSZpdp alice@test" # test-key
+    bootstrap_user_name: ansible
+    bootstrap_user_ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII244GCdnI/8cKBv9jcdtbf+Jtz+i0LMPgYsJWwSZpdp alice@test" # test-key
   tasks:
     - name: Include bootstrap role
       ansible.builtin.include_role:

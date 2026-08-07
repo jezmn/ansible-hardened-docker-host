@@ -1,7 +1,7 @@
 ---
 - name: Create ansible user
   ansible.builtin.user:
-    name: "{{ bootstrap_user.name }}"
+    name: "{{ bootstrap_user_name }}"
     groups: sudo
     append: true
     shell: /bin/bash
@@ -9,14 +9,14 @@
 
 - name: Add ansible SSH key
   ansible.posix.authorized_key:
-    user: "{{ bootstrap_user.name }}"
-    key: "{{ bootstrap_user.ssh_public_key }}"
+    user: "{{ bootstrap_user_name }}"
+    key: "{{ bootstrap_user_ssh_public_key }}"
     state: present
 
 - name: Allow ansible passwordless sudo
   ansible.builtin.copy:
-    dest: "/etc/sudoers.d/{{ bootstrap_user.name }}"
-    content: "{{ bootstrap_user.name }} ALL=(ALL) NOPASSWD: ALL\n"
+    dest: "/etc/sudoers.d/{{ bootstrap_user_name }}"
+    content: "{{ bootstrap_user_name }} ALL=(ALL) NOPASSWD: ALL\n"
     owner: root
     group: root
     mode: "0440"

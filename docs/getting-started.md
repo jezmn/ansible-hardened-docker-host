@@ -79,9 +79,8 @@ Put the public key (`~/.ssh/ansible_ed25519.pub`) in
 `inventories/group_vars/bootstrap.yml`:
 
 ```yaml
-bootstrap_user:
-  name: ansible
-  ssh_public_key: "<ssh_public_key>"
+bootstrap_user_name: ansible
+bootstrap_user_ssh_public_key: "<ssh_public_key>"
 ```
 
 Run:
