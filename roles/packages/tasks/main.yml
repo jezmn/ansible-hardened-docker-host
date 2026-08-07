@@ -1,4 +1,8 @@
 ---
+- name: Gather minimum system facts
+  ansible.builtin.setup:
+    gather_subset: ['!all', 'virtual']
+
 - name: Ensure apt key is not present in trusted.gpg.d
   ansible.builtin.file:
     path: /etc/apt/trusted.gpg.d/docker.asc
