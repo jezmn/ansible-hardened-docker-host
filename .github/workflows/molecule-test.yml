@@ -34,6 +34,6 @@ jobs:
       - name: Build and install this collection locally
         run: |
           ansible-galaxy collection build --output-path /tmp/build-test
-          ansible-galaxy collection install /tmp/build-test/jezmn-ansible_hardened_docker_host-0.1.0.tar.gz
+          ansible-galaxy collection install /tmp/build-test/jezmn-ansible_hardened_docker_host-*.tar.gz
       - name: Run molecule test
         run: molecule test --all
