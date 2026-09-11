@@ -9,6 +9,7 @@ on:
       - 'meta/**'
       - 'requirements.yml'
       - 'requirements-dev.txt'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - 'roles/**'
@@ -18,6 +19,7 @@ on:
       - 'meta/**'
       - 'requirements.yml'
       - 'requirements-dev.txt'
+      - '.github/workflows/**'
 jobs:
   test:
     name: Molecule Test
