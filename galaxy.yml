@@ -1,0 +1,32 @@
+---
+namespace: jezmn
+name: ansible_hardened_docker_host
+version: 0.1.0
+readme: README.md
+authors:
+    - jezmn
+description: Hardened Docker host from a fresh server, provisioned with Ansible.
+license:
+    - MIT
+tags:
+    - ansible
+    - cisbenchmarks
+    - docker
+    - hardening
+    - security
+    - ssh
+    - ubuntu
+    - ufw
+repository: https://github.com/jezmn/ansible-hardened-docker-host
+dependencies:
+    ansible.posix: '*'
+    community.docker: '*'
+    community.general: '*'
+build_ignore:
+    - .github
+    - molecule
+    - inventories
+    - requirements-dev.txt
+    - .venv
+    - .ansible
+    - __pycache__

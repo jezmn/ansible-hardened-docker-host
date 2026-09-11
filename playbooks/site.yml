@@ -5,11 +5,11 @@
   become: true
 
   roles:
-    - wait_for_connection
-    - packages
-    - docker
-    - firewall
-    - users
-    - security
-    - swap
-    - reboot_if_needed
+    - jezmn.ansible_hardened_docker_host.wait_for_connection
+    - jezmn.ansible_hardened_docker_host.packages
+    - jezmn.ansible_hardened_docker_host.docker
+    - jezmn.ansible_hardened_docker_host.firewall
+    - jezmn.ansible_hardened_docker_host.users
+    - jezmn.ansible_hardened_docker_host.security
+    - jezmn.ansible_hardened_docker_host.swap
+    - jezmn.ansible_hardened_docker_host.reboot_if_needed

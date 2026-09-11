@@ -15,4 +15,4 @@
         state: present
     - name: Include security role
       ansible.builtin.include_role:
-        name: security
+        name: jezmn.ansible_hardened_docker_host.security

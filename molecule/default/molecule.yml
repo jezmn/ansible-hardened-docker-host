@@ -30,8 +30,6 @@ scenario:
 
 provisioner:
   name: ansible
-  env:
-    ANSIBLE_ROLES_PATH: ../../roles
   playbooks:
     side_effect: side_effect.yml
 

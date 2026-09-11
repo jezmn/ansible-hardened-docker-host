@@ -57,6 +57,10 @@ Full walkthrough: [Getting started](docs/getting-started.md).
 # Install deps
 ansible-galaxy collection install -r requirements.yml
 
+# Build and install the collection locally
+ansible-galaxy collection build
+ansible-galaxy collection install jezmn-ansible_hardened_docker_host-*.tar.gz
+
 # Bootstrap: creates `ansible` provisioning user
 # Set `ansible` user's key first
 # Drop -k if your provider login uses an SSH key instead of a password
@@ -127,7 +131,9 @@ ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass
 ├── .gitignore
 ├── LICENSE
 ├── README.md
-├── ansible.cfg
+├── galaxy.yml
+├── meta/
+│   └── runtime.yml
 ├── requirements-dev.txt
 └── requirements.yml
 ```

@@ -18,6 +18,10 @@ cd ansible-hardened-docker-host
 # Install Ansible dependencies
 ansible-galaxy collection install -r requirements.yml
 
+# Build and install the collection locally
+ansible-galaxy collection build
+ansible-galaxy collection install jezmn-ansible_hardened_docker_host-*.tar.gz
+
 # Copy inventory examples
 cp inventories/hosts-bootstrap.ini.example inventories/hosts-bootstrap.ini
 cp inventories/hosts.ini.example inventories/hosts.ini

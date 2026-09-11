@@ -7,3 +7,4 @@ hosts-bootstrap.ini
 __pycache__/
 *.retry
 *.log
+*.tar.gz

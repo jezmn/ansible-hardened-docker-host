@@ -25,13 +25,13 @@
         state: present
     - name: Include packages role
       ansible.builtin.include_role:
-        name: packages
+        name: jezmn.ansible_hardened_docker_host.packages
     - name: Include users role
       ansible.builtin.include_role:
-        name: users
+        name: jezmn.ansible_hardened_docker_host.users
     - name: Include security role
       ansible.builtin.include_role:
-        name: security
+        name: jezmn.ansible_hardened_docker_host.security
     - name: Include docker role
       ansible.builtin.include_role:
-        name: docker
+        name: jezmn.ansible_hardened_docker_host.docker

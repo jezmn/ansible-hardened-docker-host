@@ -8,4 +8,4 @@
   tasks:
     - name: Include bootstrap role
       ansible.builtin.include_role:
-        name: bootstrap
+        name: jezmn.ansible_hardened_docker_host.bootstrap

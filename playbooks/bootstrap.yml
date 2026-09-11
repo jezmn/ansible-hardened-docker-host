@@ -5,4 +5,4 @@
   become: true
 
   roles:
-    - bootstrap
+    - jezmn.ansible_hardened_docker_host.bootstrap
