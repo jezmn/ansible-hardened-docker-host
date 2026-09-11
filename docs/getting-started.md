@@ -15,12 +15,8 @@ sudo apt update && sudo apt install -y ansible git sshpass whois python3-venv
 git clone https://github.com/jezmn/ansible-hardened-docker-host.git
 cd ansible-hardened-docker-host
 
-# Install Ansible dependencies
-ansible-galaxy collection install -r requirements.yml
-
-# Build and install the collection locally
-ansible-galaxy collection build
-ansible-galaxy collection install jezmn-ansible_hardened_docker_host-*.tar.gz
+# Install the collection roles from Galaxy (dependencies come with it)
+ansible-galaxy collection install jezmn.ansible_hardened_docker_host
 
 # Copy inventory examples
 cp inventories/hosts-bootstrap.ini.example inventories/hosts-bootstrap.ini

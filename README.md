@@ -54,12 +54,12 @@ available there) but is not CI-verified.
 Full walkthrough: [Getting started](docs/getting-started.md).
 
 ```bash
-# Install deps
-ansible-galaxy collection install -r requirements.yml
+# This project needs the repo: playbooks and inventories live here
+git clone https://github.com/jezmn/ansible-hardened-docker-host.git
+cd ansible-hardened-docker-host
 
-# Build and install the collection locally
-ansible-galaxy collection build
-ansible-galaxy collection install jezmn-ansible_hardened_docker_host-*.tar.gz
+# Install the collection roles from Galaxy
+ansible-galaxy collection install jezmn.ansible_hardened_docker_host
 
 # Bootstrap: creates `ansible` provisioning user
 # Set `ansible` user's key first
