@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Quick start is now pure Galaxy.
+- Inventory is documented as user-owned.
+- Absolute links in role READMEs so they resolve on Galaxy. 
+
 ## 0.1.1
 
 - Add per-role READMEs and role metadata required by Galaxy import.

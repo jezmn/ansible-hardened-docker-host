@@ -9,19 +9,14 @@
 sudo apt update && sudo apt install -y ansible git sshpass whois python3-venv
 ```
 
-## 1. Clone and configure
+## 1. Install and configure
 
 ```bash
-git clone https://github.com/jezmn/ansible-hardened-docker-host.git
-cd ansible-hardened-docker-host
-
-# Install the collection roles from Galaxy (dependencies come with it)
+# Install the collection from Galaxy
 ansible-galaxy collection install jezmn.ansible_hardened_docker_host
-
-# Copy inventory examples
-cp inventories/hosts-bootstrap.ini.example inventories/hosts-bootstrap.ini
-cp inventories/hosts.ini.example inventories/hosts.ini
 ```
+
+Write your own inventory, see the repo's inventories/ as a template.
 
 ## 2. Accept SSH fingerprint
 

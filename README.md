@@ -54,22 +54,19 @@ available there) but is not CI-verified.
 Full walkthrough: [Getting started](docs/getting-started.md).
 
 ```bash
-# This project needs the repo: playbooks and inventories live here
-git clone https://github.com/jezmn/ansible-hardened-docker-host.git
-cd ansible-hardened-docker-host
-
-# Install the collection roles from Galaxy
+# Install the collection and its dependencies from Galaxy
 ansible-galaxy collection install jezmn.ansible_hardened_docker_host
+
+# Playbooks run from the installed collection by FQCN.
+# Write your own inventory, see the repo's inventories/ as a template.
 
 # Bootstrap: creates `ansible` provisioning user
 # Set `ansible` user's key first
 # Drop -k if your provider login uses an SSH key instead of a password
-cp inventories/hosts-bootstrap.ini.example inventories/hosts-bootstrap.ini
-ansible-playbook -i inventories/hosts-bootstrap.ini playbooks/bootstrap.yml -k
+ansible-playbook -i hosts-bootstrap.ini jezmn.ansible_hardened_docker_host.bootstrap.yml -k
 
 # Main playbook: set users/vault vars first
-cp inventories/hosts.ini.example inventories/hosts.ini
-ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass
+ansible-playbook -i hosts.ini jezmn.ansible_hardened_docker_host.site.yml --ask-vault-pass
 ```
 
 ## What it does
