@@ -1,0 +1,12 @@
+galaxy_info:
+  role_name: wait_for_connection
+  author: jezmn
+  description: Wait for SSH to come up, then gather facts.
+  license: MIT
+  min_ansible_version: "2.18"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"
+        - "jammy"
+dependencies: []

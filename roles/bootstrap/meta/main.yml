@@ -1,0 +1,12 @@
+galaxy_info:
+  role_name: bootstrap
+  author: jezmn
+  description: Create the ansible provisioning user (separate playbook).
+  license: MIT
+  min_ansible_version: "2.18"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"
+        - "jammy"
+dependencies: []

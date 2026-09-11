@@ -1,0 +1,12 @@
+galaxy_info:
+  role_name: users
+  author: jezmn
+  description: Sudo accounts with SSH keys and password hashes.
+  license: MIT
+  min_ansible_version: "2.18"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"
+        - "jammy"
+dependencies: []

@@ -1,0 +1,12 @@
+galaxy_info:
+  role_name: docker
+  author: jezmn
+  description: Docker CE + buildx + compose from the official repo, weekly cleanup cron.
+  license: MIT
+  min_ansible_version: "2.18"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"
+        - "jammy"
+dependencies: []
