@@ -9,4 +9,7 @@ galaxy_info:
       versions:
         - "noble"
         - "jammy"
+    - name: Debian
+      versions:
+        - "trixie"
 dependencies: []

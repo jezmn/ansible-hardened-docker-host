@@ -11,6 +11,7 @@ license:
 tags:
     - ansible
     - cisbenchmarks
+    - debian
     - docker
     - hardening
     - security
