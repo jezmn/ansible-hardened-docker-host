@@ -149,6 +149,12 @@ ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass
 > **Note:** On fresh hosts, `--check` may fail because earlier changes are not
 > applied. See [Ansible's check mode documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html).
 
+On an already provisioned host, preview what a new version would change:
+
+```bash
+ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass --check --diff
+```
+
 ## 7. Linting
 
 ```bash
