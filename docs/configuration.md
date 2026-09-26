@@ -24,6 +24,8 @@ The security role derives the `AllowUsers` SSH whitelist from this list
 automatically, plus the provisioning user (`ansible`) created by the bootstrap
 role. Together they are the only accounts allowed to log in. To whitelist
 additional pre-existing accounts, extend `security_ssh_extra_allowed_users`.
+Removing an account from both lists does not delete it, but prevents new SSH
+logins.
 
 ## Password hashes
 
