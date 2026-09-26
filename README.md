@@ -1,13 +1,12 @@
 # Ansible Hardened Docker Host
 
-Ansible playbooks that turn a fresh Ubuntu server into a hardened
-Docker host: SSH locked down, UFW firewall, sudo user accounts, 
+Ansible playbooks that turn a fresh Ubuntu or Debian server into a hardened
+Docker host: SSH locked down, UFW firewall, sudo user accounts,
 and Docker ready to run containers.
 
-**Supported platform:** Ubuntu 24.04 LTS is the primary target: the CIS
-mapping ([docs/cis-mapping.md](docs/cis-mapping.md)) and the Molecule scenario
-run against 24.04. 22.04 is compatible (all sshd options and packages used are
-available there) but is not CI-verified.
+**Supported platforms:** Ubuntu 24.04 LTS and Debian 13. Both run in the
+Molecule `default` and `bootstrap` scenarios. The [CIS mapping](docs/cis-mapping.md) and 
+OpenSCAP audit apply only to Ubuntu 24.04 LTS.
 
 ## Features
 
@@ -28,9 +27,9 @@ available there) but is not CI-verified.
 
 - Docker CE + buildx + compose plugin from the official repo, weekly
   `docker system prune` (volume pruning opt-in).
-- Removes Ubuntu's stale `docker.io`/`containerd` first, so the official repo
-  never conflicts with the distro packages.
-- Repository uses the host's release codename.
+- Removes conflicting distribution-provided `docker.io`/`containerd` first.
+- Uses the official Docker repository for the host's distribution and release
+  codename.
 
 ### Reliability
 
@@ -141,7 +140,7 @@ ansible-playbook -i hosts.ini jezmn.ansible_hardened_docker_host.site.yml --ask-
 |---|---|
 | [Getting started](docs/getting-started.md) | Full setup guide |
 | [Configuration](docs/configuration.md) | Variables, users, vault, security, docker cleanup, swap |
-| [CIS mapping](docs/cis-mapping.md) | Security controls mapped to CIS |
+| [CIS mapping](docs/cis-mapping.md) | Security controls mapped to CIS Ubuntu 24.04 |
 | [Decisions](docs/decisions.md) | Why the code looks the way it does |
 
 ## Testing with Molecule
@@ -163,10 +162,14 @@ molecule test -s rollback
 molecule test --all    # all scenarios
 ```
 
-The default scenario runs the full pipeline (packages, users, security,
-docker) inside a Docker container (`geerlingguy/docker-ubuntu2404-ansible`),
-and the `bootstrap` scenario separately verifies that the `ansible`
-provisioning user (account, SSH key, passwordless sudo) is created from root.
+The default scenario runs packages, docker, users and security in that order
+inside Ubuntu 24.04 and Debian 13 containers.
+ - `geerlingguy/docker-ubuntu2404-ansible`
+ - `geerlingguy/docker-debian13-ansible`)
+
+The `bootstrap` scenario separately verifies on both distributions that the
+`ansible` provisioning user (account, SSH key, passwordless sudo) is created
+from root.
 
 The container shares the host kernel, so tasks that touch the kernel or
 system services that cannot start in a container are skipped when

@@ -84,6 +84,8 @@ Run:
 ansible-playbook -i inventories/hosts-bootstrap.ini playbooks/bootstrap.yml -k
 ```
 
+Add `-K` if sudo requires a password.
+
 This creates the `ansible` user and installs your key on the server.
 
 ## 4. Configure the inventory
@@ -138,17 +140,14 @@ The `--ask-vault-pass` in the playbook command asks for this password.
 Before running, open an SSH session to your server and keep it open in case
 you get locked out.
 
-Dry-run first to see what will change.
-
-```bash
-ansible-playbook -i inventories/hosts.ini playbooks/site.yml --check --diff --ask-vault-pass
-```
-
-Run it:
+Run the playbook:
 
 ```bash
 ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass
 ```
+
+> **Note:** On fresh hosts, `--check` may fail because earlier changes are not
+> applied. See [Ansible's check mode documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html).
 
 ## 7. Linting
 
