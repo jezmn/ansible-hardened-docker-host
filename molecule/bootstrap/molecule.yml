@@ -6,8 +6,16 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: instance
+  - name: ubuntu2404
     image: geerlingguy/docker-ubuntu2404-ansible
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup/:rw
+    cgroupns_mode: host
+    command: /lib/systemd/systemd
+
+  - name: debian13
+    image: geerlingguy/docker-debian13-ansible
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup/:rw

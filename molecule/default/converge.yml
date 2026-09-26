@@ -18,7 +18,6 @@
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 3600
     - name: Install openssh-server for configuration
       ansible.builtin.apt:
         name: openssh-server
@@ -26,12 +25,12 @@
     - name: Include packages role
       ansible.builtin.include_role:
         name: jezmn.ansible_hardened_docker_host.packages
+    - name: Include docker role
+      ansible.builtin.include_role:
+        name: jezmn.ansible_hardened_docker_host.docker
     - name: Include users role
       ansible.builtin.include_role:
         name: jezmn.ansible_hardened_docker_host.users
     - name: Include security role
       ansible.builtin.include_role:
         name: jezmn.ansible_hardened_docker_host.security
-    - name: Include docker role
-      ansible.builtin.include_role:
-        name: jezmn.ansible_hardened_docker_host.docker
