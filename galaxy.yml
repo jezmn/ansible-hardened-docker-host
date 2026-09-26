@@ -1,7 +1,7 @@
 ---
 namespace: jezmn
 name: ansible_hardened_docker_host
-version: 0.1.2
+version: 0.2.0
 readme: README.md
 authors:
     - jezmn
