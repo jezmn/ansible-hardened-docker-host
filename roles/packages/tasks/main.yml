@@ -53,7 +53,6 @@
 - name: Validate fail2ban configuration
   ansible.builtin.command: fail2ban-client -t
   changed_when: false
-  check_mode: false
 
 - name: Ensure server timezone is UTC
   community.general.timezone:
