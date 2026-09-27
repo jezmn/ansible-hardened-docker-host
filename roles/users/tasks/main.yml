@@ -11,7 +11,7 @@
   ansible.builtin.user:
     name: "{{ item.name }}"
     groups: "{{ 'sudo' if item.sudo else omit }}"
-    append: true
+    append: "{{ true if item.sudo else omit }}"
     shell: /bin/bash
     password: "{{ (users_passwords | default({}))[item.name] | default(omit) }}"
     update_password: on_create
