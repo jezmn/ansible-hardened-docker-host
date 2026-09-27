@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Fix the users role failing when an account has `sudo: false`.
+
 ## 0.2.0
 
 - Debian 13 support: the Docker role now resolves the apt repository and GPG
