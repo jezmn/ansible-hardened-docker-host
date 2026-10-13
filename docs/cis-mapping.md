@@ -77,9 +77,9 @@ with documented deviations and pending items.
 | 5.1.19 | Ensure sshd PermitEmptyPasswords is disabled | `roles/security/tasks/sshd_config.yml`: `PermitEmptyPasswords no` |
 | 5.1.20 | Ensure sshd PermitRootLogin is disabled | Deviation: `PermitRootLogin prohibit-password` (bootstrap logs in as root) |
 | 5.1.21 | Ensure sshd PermitUserEnvironment is disabled | `roles/security/tasks/sshd_config.yml`: `PermitUserEnvironment no` |
-| 5.2.1 | Ensure sudo is installed | Installed by default on Ubuntu 24.04 |
+| 5.2.1 | Ensure sudo is installed | `roles/bootstrap/tasks/main.yml`: installs sudo before configuring sudoers |
 | 5.2.3 | Ensure sudo log file exists | `roles/security/tasks/logging.yml`: `/etc/sudoers.d/99-logfile` `0440`, `Defaults logfile="/var/log/sudo.log"`, validated with `visudo -cf` |
-| 5.2.4 | Ensure users must provide password for privilege escalation | Deviation: `ansible` has NOPASSWD (bootstrap); every other sudo user requires a password |
+| 5.2.4 | Ensure users must provide password for privilege escalation | Deviation: `ansible` has NOPASSWD (bootstrap). |
 | 5.2.7 | Ensure pam_wheel group is empty and su is restricted to it | Not implemented: no local console login; administrative access is via sudo only (rules `ensure_pam_wheel_group_empty`, `use_pam_wheel_group_for_su`) |
 | 5.4.2.5 | Ensure root's PATH does not include world- or group-writable directories | Not implemented: root PATH left as shipped (rule `root_path_all_dirs` flagged) |
 | 5.4.3.2 | Ensure default user shell timeout is configured | `roles/security/tasks/system.yml`: `/etc/profile.d/99-tmout.sh` sets `TMOUT=900`, `readonly TMOUT`, `export TMOUT` |

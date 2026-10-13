@@ -8,7 +8,8 @@ Role defaults live in `roles/<name>/defaults/main.yml`.
 
 ## User accounts
 
-Defined in `inventories/group_vars/servers/users.yml`:
+Define accounts in `group_vars/servers/users.yml` alongside your
+inventory, as in [Getting Started](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/getting-started.md):
 
 ```yaml
 users_accounts:
@@ -29,7 +30,7 @@ logins.
 
 ## Password hashes
 
-Password hashes for sudo users go in `inventories/group_vars/servers/vault.yml`:
+Password hashes for sudo users go in `group_vars/servers/vault.yml`:
 
 ```yaml
 users_passwords:

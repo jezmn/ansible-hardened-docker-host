@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+- Install sudo before configuring bootstrap sudoers.
+- Fix Galaxy setup instructions and documentation links.
+
 ## 0.2.1
 
 - Fix the users role failing when an account has `sudo: false`.

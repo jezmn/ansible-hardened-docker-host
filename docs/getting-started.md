@@ -3,10 +3,10 @@
 ## Requirements
 
 - A Linux environment to run Ansible from
-- `ansible`, `git`, `sshpass`, `whois`, `python3-venv`
+- `ansible`, `sshpass`, `whois`, `python3-venv`
 
 ```bash
-sudo apt update && sudo apt install -y ansible git sshpass whois python3-venv
+sudo apt update && sudo apt install -y ansible sshpass whois python3-venv
 ```
 
 ## 1. Install and configure
@@ -16,7 +16,17 @@ sudo apt update && sudo apt install -y ansible git sshpass whois python3-venv
 ansible-galaxy collection install jezmn.ansible_hardened_docker_host
 ```
 
-Write your own inventory, see the repo's inventories/ as a template.
+Copy the [repository templates](https://github.com/jezmn/ansible-hardened-docker-host/tree/main/inventories) locally, remove `.example` from the inventory filenames, and edit them:
+
+```text
+hosts-bootstrap.ini
+hosts.ini
+group_vars/
+├── bootstrap.yml
+└── servers/
+    ├── users.yml
+    └── vault.yml
+```
 
 ## 2. Accept SSH fingerprint
 
@@ -25,7 +35,6 @@ providers, `ubuntu` on AWS, and so on.
 
 ```bash
 ssh <provider-login>@<server_ip>   # type "yes", then exit
-# or: ssh-keyscan -H <server_ip> >> ~/.ssh/known_hosts
 ```
 
 ## 3. Bootstrap
@@ -43,7 +52,7 @@ keypairs are in play. Don't mix them up:
 
 #### Configure the bootstrap inventory
 
-Edit `inventories/hosts-bootstrap.ini` with your server IP and provider
+Edit `hosts-bootstrap.ini` with your server IP and provider
 login:
 
 ```ini
@@ -62,7 +71,7 @@ ansible_python_interpreter=/usr/bin/python3
 Verify Ansible can reach the server (drop -k if it uses a key):
 
 ```bash
-ansible bootstrap -i inventories/hosts-bootstrap.ini -m ping -k
+ansible bootstrap -i hosts-bootstrap.ini -m ping -k
 ```
 Generate the `ansible` provisioning user's keypair. This user is what
 `site.yml` connects as, whatever initial login your provider gives you:
@@ -71,7 +80,7 @@ Generate the `ansible` provisioning user's keypair. This user is what
 ssh-keygen -t ed25519 -C "ansible" -f ~/.ssh/ansible_ed25519
 ```
 Put the public key (`~/.ssh/ansible_ed25519.pub`) in
-`inventories/group_vars/bootstrap.yml`:
+`group_vars/bootstrap.yml`:
 
 ```yaml
 bootstrap_user_name: ansible
@@ -81,7 +90,7 @@ bootstrap_user_ssh_public_key: "<ssh_public_key>"
 Run:
 
 ```bash
-ansible-playbook -i inventories/hosts-bootstrap.ini playbooks/bootstrap.yml -k
+ansible-playbook -i hosts-bootstrap.ini jezmn.ansible_hardened_docker_host.bootstrap.yml -k
 ```
 
 Add `-K` if sudo requires a password.
@@ -90,7 +99,7 @@ This creates the `ansible` user and installs your key on the server.
 
 ## 4. Configure the inventory
 
-Edit `inventories/hosts.ini` with your server IP:
+Edit `hosts.ini` with your server IP:
 
 ```ini
 # Edit with your server IP
@@ -105,7 +114,7 @@ ansible_ssh_private_key_file=~/.ssh/ansible_ed25519
 
 ## 5. Configure variables
 
-Edit `inventories/group_vars/servers/users.yml` with your accounts:
+Edit `group_vars/servers/users.yml` with your accounts:
 
 ```yaml
 users_accounts:
@@ -114,7 +123,7 @@ users_accounts:
     ssh_public_key: "<ssh_public_key>"    # user key from ssh-keygen
 ```
 
-Edit `inventories/group_vars/servers/vault.yml` with password hashes:
+Edit `group_vars/servers/vault.yml` with password hashes:
 
 ```yaml
 users_passwords:
@@ -130,7 +139,7 @@ mkpasswd --method=sha-512
 Encrypt the vault file (it stores password hashes):
 
 ```bash
-ansible-vault encrypt inventories/group_vars/servers/vault.yml
+ansible-vault encrypt group_vars/servers/vault.yml
 ```
 
 The `--ask-vault-pass` in the playbook command asks for this password.
@@ -143,7 +152,7 @@ you get locked out.
 Run the playbook:
 
 ```bash
-ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass
+ansible-playbook -i hosts.ini jezmn.ansible_hardened_docker_host.site.yml --ask-vault-pass
 ```
 
 > **Note:** On fresh hosts, `--check` may fail because earlier changes are not
@@ -152,14 +161,5 @@ ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass
 On an already provisioned host, preview what a new version would change:
 
 ```bash
-ansible-playbook -i inventories/hosts.ini playbooks/site.yml --ask-vault-pass --check --diff
-```
-
-## 7. Linting
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install ansible-lint
-ansible-lint
+ansible-playbook -i hosts.ini jezmn.ansible_hardened_docker_host.site.yml --ask-vault-pass --check --diff
 ```

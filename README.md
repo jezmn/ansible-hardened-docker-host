@@ -5,7 +5,7 @@ Docker host: SSH locked down, UFW firewall, sudo user accounts,
 and Docker ready to run containers.
 
 **Supported platforms:** Ubuntu 24.04 LTS and Debian 13. Both run in the
-Molecule `default` and `bootstrap` scenarios. The [CIS mapping](docs/cis-mapping.md) and 
+Molecule `default` and `bootstrap` scenarios. The [CIS mapping](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/cis-mapping.md) and
 OpenSCAP audit apply only to Ubuntu 24.04 LTS.
 
 ## Features
@@ -50,14 +50,15 @@ OpenSCAP audit apply only to Ubuntu 24.04 LTS.
 
 ## Quick start
 
-Full walkthrough: [Getting started](docs/getting-started.md).
+Full walkthrough: [Getting started](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/getting-started.md).
+Published collection: [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/jezmn/ansible_hardened_docker_host/).
 
 ```bash
 # Install the collection and its dependencies from Galaxy
 ansible-galaxy collection install jezmn.ansible_hardened_docker_host
 
 # Playbooks run from the installed collection by FQCN.
-# Write your own inventory, see the repo's inventories/ as a template.
+# Write your own inventory; see the templates in the GitHub repository.
 
 # Bootstrap: creates `ansible` provisioning user
 # Set `ansible` user's key first
@@ -81,8 +82,6 @@ ansible-playbook -i hosts.ini jezmn.ansible_hardened_docker_host.site.yml --ask-
 | `security` | SSH hardening, kernel sysctls (CIS 3.3.x), auditd, cloud-init override fix, unattended upgrades |
 | `swap` | Swap file (adapted from geerlingguy) |
 | `reboot_if_needed` | Reboot on pending kernel update |
-
-> Note: kernel-level tasks are skipped inside containers. See [Testing with Molecule](#testing-with-molecule).
 
 ## Repository layout
 
@@ -138,10 +137,10 @@ ansible-playbook -i hosts.ini jezmn.ansible_hardened_docker_host.site.yml --ask-
 
 | File | What |
 |---|---|
-| [Getting started](docs/getting-started.md) | Full setup guide |
-| [Configuration](docs/configuration.md) | Variables, users, vault, security, docker cleanup, swap |
-| [CIS mapping](docs/cis-mapping.md) | Security controls mapped to CIS Ubuntu 24.04 |
-| [Decisions](docs/decisions.md) | Why the code looks the way it does |
+| [Getting started](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/getting-started.md) | Full setup guide |
+| [Configuration](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/configuration.md) | Variables, users, vault, security, docker cleanup, swap |
+| [CIS mapping](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/cis-mapping.md) | Security controls mapped to CIS Ubuntu 24.04 |
+| [Decisions](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/decisions.md) | Why the code looks the way it does |
 
 ## Testing with Molecule
 
@@ -164,8 +163,8 @@ molecule test --all    # all scenarios
 
 The default scenario runs packages, docker, users and security in that order
 inside Ubuntu 24.04 and Debian 13 containers.
- - `geerlingguy/docker-ubuntu2404-ansible`
- - `geerlingguy/docker-debian13-ansible`)
+- `geerlingguy/docker-ubuntu2404-ansible`
+- `geerlingguy/docker-debian13-ansible`
 
 The `bootstrap` scenario separately verifies on both distributions that the
 `ansible` provisioning user (account, SSH key, passwordless sudo) is created
@@ -204,7 +203,7 @@ The `swap` role is adapted from
 [geerlingguy/ansible-role-swap](https://github.com/geerlingguy/ansible-role-swap).
 
 Modifications and rationale for both are documented in
-[docs/decisions.md](docs/decisions.md).
+[docs/decisions.md](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/docs/decisions.md).
 
 ## License
 
