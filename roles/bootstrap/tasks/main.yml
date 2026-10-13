@@ -1,4 +1,10 @@
 ---
+- name: Install sudo
+  ansible.builtin.apt:
+    name: sudo
+    state: present
+    update_cache: true
+
 - name: Create ansible user
   ansible.builtin.user:
     name: "{{ bootstrap_user_name }}"

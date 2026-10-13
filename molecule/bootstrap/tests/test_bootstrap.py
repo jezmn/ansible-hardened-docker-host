@@ -15,3 +15,12 @@ def test_passwordless_sudo(host):
     sudoers = host.file("/etc/sudoers.d/ansible")
     assert sudoers.exists
     assert "NOPASSWD" in sudoers.content_string
+
+
+def test_sudo_installed(host):
+    assert host.package("sudo").is_installed
+
+
+def test_bootstrap_sudoers_valid(host):
+    result = host.run("/usr/sbin/visudo -cf /etc/sudoers.d/ansible")
+    assert result.rc == 0

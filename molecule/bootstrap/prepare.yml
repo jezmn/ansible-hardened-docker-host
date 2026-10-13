@@ -1,0 +1,11 @@
+---
+- name: Start without sudo
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Remove sudo before testing bootstrap
+      ansible.builtin.apt:
+        name: sudo
+        state: absent
+      environment:
+        SUDO_FORCE_REMOVE: "yes"
