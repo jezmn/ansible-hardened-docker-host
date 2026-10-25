@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- Cap journald disk usage with `SystemMaxUse=1G`.
+- Seed `/etc/docker/daemon.json` with log rotation (`max-size`, `max-file`)
+  and builder garbage collection on first run.
+- Replace the aggressive weekly prune with a selective cleanup: images older
+  than 168h, plus `docker builder prune --keep-storage=5GB`.
+- Document the new docker and security role variables in `argument_specs`.
+
 ## 0.2.2
 
 - Install sudo before configuring bootstrap sudoers.
