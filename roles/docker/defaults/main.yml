@@ -8,7 +8,7 @@ docker_image_prune_older_than: "168h"
 docker_log_max_size: "10m"
 
 # Rendered as a string in daemon.json, as Docker requires.
-docker_log_max_files: 3
+docker_log_max_files: "3"
 
 docker_builder_gc_reserved_space: "10GB"
 docker_live_restore: false

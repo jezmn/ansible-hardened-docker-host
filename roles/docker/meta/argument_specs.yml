@@ -22,8 +22,8 @@ argument_specs:
         default: "10m"
         description: Max size per container log file before rotation.
       docker_log_max_files:
-        type: int
-        default: 3
+        type: str
+        default: "3"
         description: Number of container log files kept before rotation.
       docker_builder_gc_reserved_space:
         type: str
