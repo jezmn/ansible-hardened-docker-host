@@ -24,9 +24,10 @@
     value: "1"
     state: present
     sysctl_file: /etc/sysctl.d/99-hardening.conf
-  loop: "{{ security_rp_filter_iface.results }}"
+  loop: "{{ security_rp_filter_iface.results | default([]) }}"
   when:
-    - item.item != "lo"
+    - ansible_facts.virtualization_type not in ["docker", "container"]
+    - item.stat is defined
     - item.stat.exists
 
 - name: Check for the ufw sysctl file
