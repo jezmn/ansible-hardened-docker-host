@@ -27,8 +27,10 @@ def test_docker_installed(host):
 
 
 def test_docker_cleanup_cron(host):
-    assert "docker cleanup" in host.check_output("crontab -l")
-
+    cron = host.check_output("crontab -l")
+    assert "docker cleanup" in cron
+    assert "168h" in cron
+    assert "--keep-storage=5GB" in cron
 
 def test_fail2ban_jail_configured(host):
     jail = host.file("/etc/fail2ban/jail.local")
@@ -51,3 +53,4 @@ def test_docker_daemon_config(host):
     assert f.exists
     assert "log-opts" in f.content_string
     assert "max-size" in f.content_string
+    assert "max-file" in f.content_string
