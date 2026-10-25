@@ -1,3 +1,6 @@
 ---
 # Include --volumes in the weekly cleanup. Safe if all data lives in named volumes.
 docker_prune_volumes: false
+
+# Remove unused images older than 7 days.
+docker_image_prune_older_than: "168h"

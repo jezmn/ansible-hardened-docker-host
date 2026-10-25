@@ -3,7 +3,7 @@
 
 - name: Gather minimum system facts
   ansible.builtin.setup:
-    gather_subset: ['!all', 'distribution', 'virtual']
+    gather_subset: ["!all", "distribution", "virtual"]
 
 - name: Check supported Docker distribution
   ansible.builtin.assert:
@@ -74,7 +74,10 @@
 - name: Add docker cleanup cron job
   ansible.builtin.cron:
     name: docker cleanup
-    job: "docker system prune -af{{ ' --volumes' if docker_prune_volumes else '' }} > /dev/null 2>&1"
+    job: >-
+      bash -c "docker image prune -af --filter until={{ docker_image_prune_older_than }};
+      docker container prune -f;
+      docker builder prune -f --keep-storage=5GB" > /dev/null 2>&1
     hour: "3"
     minute: "0"
     weekday: "0"
