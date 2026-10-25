@@ -130,6 +130,13 @@ packages_fail2ban_findtime: "10m"
 packages_fail2ban_maxretry: "5"
 ```
 
+**journald disk cap**: `SystemMaxUse=1G` in `/etc/systemd/journald.conf`,
+so the journal cannot grow unbounded on busy hosts:
+
+```yaml
+security_journald_max_use: "1G"
+```
+
 **SSH TCP forwarding**: disabled by default (CIS 5.1.8). Set to `"yes"`
 only if a user needs `ssh -L` / `ssh -R` / `ssh -D` tunnels:
 
@@ -147,18 +154,43 @@ security_autoupdate_reboot: "false"
 security_autoupdate_reboot_time: "02:00"
 ```
 
-## Docker cleanup
+## Docker disk hygiene
 
-The weekly cron (`docker system prune -af`, Sundays 03:00) removes stopped
-containers, dangling images and build cache. Anonymous volumes are left
-untouched by default. Default lives in `roles/docker/defaults/main.yml`:
+### daemon.json
+
+The role seeds `/etc/docker/daemon.json` with container log rotation and
+BuildKit garbage collection:
+
+- `log-opts` (`max-size: 10m`, `max-file: 3`): rotates container logs so they stop growing forever. 
+  Existing containers keep the old behavior until you recreate them.
+- `builder.gc` (`defaultReservedSpace: 10GB`): caps the BuildKit build cache at 10GB.
+
+The role only seeds `daemon.json` if it doesn't exist; it never overwrites an
+existing file. To let the role manage an existing file, set:
 
 ```yaml
-docker_prune_volumes: false
+docker_daemon_force: true
 ```
 
-Set it to `true` only if all your data lives in named volumes or bind mounts.
-With `--volumes` enabled, unused *anonymous* volumes are also deleted.
+Custom keys (`ipv6`, `dns`, ...) are merged over the generated content
+with `docker_daemon_config_extra` (recursive):
+
+```yaml
+docker_daemon_config_extra:
+  ipv6: true
+```
+
+### Weekly cleanup cron
+
+Runs Sundays at 03:00:
+
+```bash
+docker image prune -af --filter until=168h   # unused images older than 7 days
+docker container prune -f                    # stopped containers
+docker builder prune -f --keep-storage=5GB   # hard cap on build cache
+```
+
+Volumes are not pruned. To include anonymous volumes, set `docker_prune_volumes: true`.
 
 ## Swap
 

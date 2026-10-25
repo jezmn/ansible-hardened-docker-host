@@ -1,6 +1,7 @@
 # docker
 
-Docker CE + buildx + compose from the official repo, weekly cleanup cron.
+Docker CE + buildx + compose from the official repo, seeded daemon.json
+(log rotation and build cache GC) and weekly selective cleanup cron.
 
 Belongs to the `jezmn.ansible_hardened_docker_host` collection.
 See the [root README](https://github.com/jezmn/ansible-hardened-docker-host/blob/main/README.md) for the full role table and

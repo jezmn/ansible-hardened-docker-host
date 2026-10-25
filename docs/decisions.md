@@ -158,3 +158,17 @@ The SSG 24.04 profile covers CIS 4.2.x with raw `nft` rules. This repo uses
 iptables chains with less room for aliasing mistakes and keeps Molecule CI
 stable. nftables stays an option if per-interface or dynamic rulesets are ever
 needed.
+
+## Docker: seed-only daemon.json and selective prune cron
+
+`daemon.json` is written with `force: false`: the role creates it on fresh
+hosts and never overwrites an existing one. Set `docker_daemon_force: true`
+to let the role manage it fully.
+
+The weekly cron runs three bounded prunes instead of `docker system prune
+-af` because it would also delete useful cached base images.
+
+## journald disk cap
+
+The security role caps journald at `SystemMaxUse=1G` (`security_journald_max_use`)
+to keep logs from filling the disk.
