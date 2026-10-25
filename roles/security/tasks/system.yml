@@ -9,16 +9,25 @@
   when:
     - ansible_facts.virtualization_type not in ["docker", "container"]
 
-- name: Apply reverse path filtering per interface
-  ansible.posix.sysctl:
-    name: "net.ipv4.conf.{{ item }}.rp_filter"
-    value: "1"
-    state: present
-    sysctl_file: /etc/sysctl.d/99-hardening.conf
+- name: Check which interfaces expose rp_filter
+  ansible.builtin.stat:
+    path: "/proc/sys/net/ipv4/conf/{{ item }}/rp_filter"
+  register: security_rp_filter_iface
   loop: "{{ ansible_facts.interfaces }}"
   when:
     - item != "lo"
     - ansible_facts.virtualization_type not in ["docker", "container"]
+
+- name: Apply reverse path filtering per interface
+  ansible.posix.sysctl:
+    name: "net.ipv4.conf.{{ item.item }}.rp_filter"
+    value: "1"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-hardening.conf
+  loop: "{{ security_rp_filter_iface.results }}"
+  when:
+    - item.item != "lo"
+    - item.stat.exists
 
 - name: Check for the ufw sysctl file
   ansible.builtin.stat:
