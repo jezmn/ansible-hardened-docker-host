@@ -38,4 +38,9 @@ def test_fail2ban_jail_configured(host):
 
 def test_sshd_restored_after_rollback(host):
     config = host.file("/etc/ssh/sshd_config")
-    assert not re.search(r"^PasswordAuthentication yes", config.content_string, re.M)
+    assert not re.search(r"^PasswordAuthentication yes", config.content_string, re.MULTILINE)
+
+
+def test_journald_max_use(host):
+    f = host.file("/etc/systemd/journald.conf")
+    assert "SystemMaxUse=" in f.content_string

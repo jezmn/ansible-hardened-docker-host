@@ -29,6 +29,16 @@
   notify:
     - Restart systemd-journald
 
+- name: Cap journald disk usage
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^#?SystemMaxUse"
+    line: "SystemMaxUse={{ security_journald_max_use }}"
+    state: present
+    mode: "0644"
+  notify:
+    - Restart systemd-journald
+
 - name: Configure sudo log file
   ansible.builtin.copy:
     dest: /etc/sudoers.d/99-logfile
