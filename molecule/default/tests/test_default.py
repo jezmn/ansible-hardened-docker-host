@@ -44,3 +44,10 @@ def test_sshd_restored_after_rollback(host):
 def test_journald_max_use(host):
     f = host.file("/etc/systemd/journald.conf")
     assert "SystemMaxUse=" in f.content_string
+
+
+def test_docker_daemon_config(host):
+    f = host.file("/etc/docker/daemon.json")
+    assert f.exists
+    assert "log-opts" in f.content_string
+    assert "max-size" in f.content_string

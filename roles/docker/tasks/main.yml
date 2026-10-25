@@ -66,6 +66,28 @@
   notify:
     - Restart docker
 
+- name: Ensure /etc/docker directory exists
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    mode: "0755"
+
+- name: Configure Docker daemon (only seed if absent)
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    force: "{{ docker_daemon_force }}"
+    mode: "0644"
+    content: >-
+      {{
+        docker_daemon_config
+        | combine(docker_daemon_builder_block)
+        | combine(docker_daemon_live_restore_block if docker_live_restore | bool else {})
+        | combine(docker_daemon_config_extra, recursive=True)
+        | to_nice_json(indent=2)
+      }}
+  notify:
+    - Restart docker
+
 - name: Install cron for scheduled cleanup
   ansible.builtin.apt:
     name: cron

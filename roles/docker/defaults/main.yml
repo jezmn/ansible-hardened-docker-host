@@ -4,3 +4,31 @@ docker_prune_volumes: false
 
 # Remove unused images older than 7 days.
 docker_image_prune_older_than: "168h"
+
+docker_log_max_size: "10m"
+
+# max-file MUST be a string in daemon.json log-opts, so keep it quoted here
+docker_log_max_files: "3"
+
+docker_builder_gc_reserved_space: "10GB"
+docker_live_restore: false
+
+# Only seed /etc/docker/daemon.json when absent. Set true to overwrite an existing file.
+docker_daemon_force: false
+
+docker_daemon_config:
+  log-driver: json-file
+  log-opts:
+    max-size: "{{ docker_log_max_size }}"
+    max-file: "{{ docker_log_max_files }}"
+
+docker_daemon_builder_block:
+  builder:
+    gc:
+      enabled: true
+      defaultReservedSpace: "{{ docker_builder_gc_reserved_space }}"
+
+docker_daemon_live_restore_block:
+  live-restore: true
+
+docker_daemon_config_extra: {}
