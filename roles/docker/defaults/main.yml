@@ -7,8 +7,9 @@ docker_image_prune_older_than: "168h"
 
 docker_log_max_size: "10m"
 
-# max-file MUST be a string in daemon.json log-opts, so keep it quoted here
-docker_log_max_files: "3"
+# max-file MUST render as a string in daemon.json log-opts (Docker requirement);
+# the template quotes the Jinja so an int value here still lands as "3" in JSON.
+docker_log_max_files: 3
 
 docker_builder_gc_reserved_space: "10GB"
 docker_live_restore: false

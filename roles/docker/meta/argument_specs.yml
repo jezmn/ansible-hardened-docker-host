@@ -4,11 +4,54 @@ argument_specs:
     short_description: Install and configure Docker
     description:
       - Installs Docker CE, buildx and the compose plugin from the official
-        Docker repository and schedules a weekly cleanup cron.
+        Docker repository, seeds daemon.json on fresh hosts and schedules a
+        weekly cleanup cron.
     options:
       docker_prune_volumes:
         type: bool
         default: false
         description:
-          - Whether the weekly docker system prune includes anonymous volumes.
+          - Whether the weekly cleanup includes anonymous volumes.
           - Set to true only if all data lives in named volumes or bind mounts.
+      docker_image_prune_older_than:
+        type: str
+        default: "168h"
+        description: Unused images older than this are pruned by the weekly cron.
+      docker_log_max_size:
+        type: str
+        default: "10m"
+        description: Max size per container log file before rotation.
+      docker_log_max_files:
+        type: int
+        default: 3
+        description: Number of container log files kept before rotation.
+      docker_builder_gc_reserved_space:
+        type: str
+        default: "10GB"
+        description: Disk space reserved for the BuildKit build cache.
+      docker_live_restore:
+        type: bool
+        default: false
+        description:
+          - Keep containers running while the Docker daemon restarts.
+          - Daemon updates then need to be scheduled at controlled moments.
+      docker_daemon_force:
+        type: bool
+        default: false
+        description:
+          - daemon.json is only seeded when absent; set true to overwrite an
+            existing file.
+      docker_daemon_config:
+        type: dict
+        required: false
+        description: Base daemon.json content; override to replace it entirely.
+      docker_daemon_config_extra:
+        type: dict
+        required: false
+        description:
+          - Custom keys merged over the generated daemon.json, key by key.
+          - Nested dicts are merged, not replaced.
+        example:
+          ipv6: true
+          dns:
+            - "1.1.1.1"

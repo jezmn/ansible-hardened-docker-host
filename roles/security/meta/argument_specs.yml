@@ -111,3 +111,7 @@ argument_specs:
         description:
           - Auto-logout inactive shell sessions after N seconds (CIS 5.4.3.2).
           - Set to 0 to disable.
+      security_journald_max_use:
+        type: str
+        default: "1G"
+        description: Max journald disk usage. Mirrors systemd-journald SystemMaxUse.

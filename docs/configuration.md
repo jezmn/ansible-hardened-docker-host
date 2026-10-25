@@ -163,7 +163,8 @@ BuildKit garbage collection:
 
 - `log-opts` (`max-size: 10m`, `max-file: 3`): rotates container logs so they stop growing forever. 
   Existing containers keep the old behavior until you recreate them.
-- `builder.gc` (`defaultReservedSpace: 10GB`): caps the BuildKit build cache at 10GB.
+- `builder.gc` (`defaultReservedSpace: 10GB`): target size for the BuildKit
+  build cache.
 
 The role only seeds `daemon.json` if it doesn't exist; it never overwrites an
 existing file. To let the role manage an existing file, set:
