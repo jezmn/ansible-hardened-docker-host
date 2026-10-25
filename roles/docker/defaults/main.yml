@@ -2,19 +2,18 @@
 # Include --volumes in the weekly cleanup. Safe if all data lives in named volumes.
 docker_prune_volumes: false
 
-# Remove unused images older than 7 days.
+# Unused images older than this are pruned.
 docker_image_prune_older_than: "168h"
 
 docker_log_max_size: "10m"
 
-# max-file MUST render as a string in daemon.json log-opts (Docker requirement);
-# the template quotes the Jinja so an int value here still lands as "3" in JSON.
+# Rendered as a string in daemon.json, as Docker requires.
 docker_log_max_files: 3
 
 docker_builder_gc_reserved_space: "10GB"
 docker_live_restore: false
 
-# Only seed /etc/docker/daemon.json when absent. Set true to overwrite an existing file.
+# Only seed /etc/docker/daemon.json when absent. Set true to overwrite it.
 docker_daemon_force: false
 
 docker_daemon_config:
